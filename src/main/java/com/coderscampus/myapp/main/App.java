@@ -1,24 +1,55 @@
 package com.coderscampus.myapp.main;
 
-import com.coderscampus.myapp.service.MyService;
+import java.io.IOException;
+import java.util.Scanner;
+import com.coderscampus.myapp.domain.User;
+import com.coderscampus.myapp.service.UserArrayService;
 
 public class App {
-	
-	private MyService myService = new MyService();
-	
-	public static void main(String[] args) {
+
+	public static void main(String[] args) throws IOException {
 		new App().execute();
 	}
 
-	private void execute() {
+	private void execute() throws IOException {
 		// Your code goes here, not in the main() method
-		// This removes any need to consume statics
+		// This remoBennettA3 bennettA3 = new BennettA3()
 		// The code below is to be deleted once you understand what it does
 
-		System.out.println(AppConstants.EXAMPLE_CONSTANT);
-		System.out.println(" 2 * 17 = " + myService.multiply(2, 17));
-		System.out.println("Contents of the file at " + AppConstants.EXAMPLE_FILE_PATH);
-		System.out.println(myService.fileContents(AppConstants.EXAMPLE_FILE_PATH));
+		User[] users = new UserArrayService().parseFile("data.txt");
+		Scanner scan = new Scanner(System.in);
+		int fails = 0;
+		User foundUser = null;
+		while (fails <= 5 && foundUser == null) {
+			System.out.println("Enter a Username: ");
+			String username = scan.nextLine();
+			System.out.println("Enter a Password");
+			String password = scan.nextLine();
+			foundUser = validate(username, password, users);
+			if (foundUser != null) {
+				System.out.println("Welcome " + foundUser.getName());
+			} else {
+				fails++;
+				if (fails == 5) {
+					System.out.println("Too many failed login attemps, you are now locked out.");
+					System.exit(fails);
+				} else
+					System.out.println("Invalid login, please try again.");
+			}
+
+		}
+		scan.close();
+	}
+
+	private User validate(String username, String password, User[] users) {
+		for (User user : users) {
+			if (username.equalsIgnoreCase(user.getUsername()) && password.equals(user.getPassword())) {
+
+				return user;
+
+			}
+		}
+		return null;
 	}
 
 }
